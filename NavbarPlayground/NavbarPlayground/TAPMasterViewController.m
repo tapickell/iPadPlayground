@@ -47,9 +47,26 @@
     self.detailViewController = (TAPDetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
 
+#pragma mark addded chpt1
+
 - (void)initData
 {
     NSMutableArray *even = [NSMutableArray array];
+    NSMutableArray *odd = [NSMutableArray array];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    NSString *msg = nil;
+    
+    for (int i = 0; i < 20; i++) {
+        msg = [NSString stringWithFormat:@"Number = %d", i];
+        if (i % 2 == 0) {
+            [even addObject:msg];
+        } else {
+            [odd addObject:msg];
+        }
+    }
+    [dict setObject:even forKey:@"Even"];
+    [dict setObject:odd forKey:@"Odd"];
+    [self setGroupsDict:dict];
     
 }
 
@@ -69,6 +86,7 @@
     [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
+
 #pragma mark - Table View
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -78,15 +96,24 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return _objects.count;
+    return [groupsDict count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-
-    NSDate *object = _objects[indexPath.row];
-    cell.textLabel.text = [object description];
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+//
+//    NSDate *object = _objects[indexPath.row];
+//    cell.textLabel.text = [object description];
+    NSArray *keys = [[[self groupsDict] allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSString *key = [keys objectAtIndex:[indexPath row]];
+    static NSString *CellIdentifier = @"CellIdentifier";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+    [[cell textLabel] setText:key];
     return cell;
 }
 
@@ -124,8 +151,22 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDate *object = _objects[indexPath.row];
-    self.detailViewController.detailItem = object;
+//    NSDate *object = _objects[indexPath.row];
+//    self.detailViewController.detailItem = object;
+    NSArray *keys = [[[self groupsDict] allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSString *key = [keys objectAtIndex:[indexPath row]];
+    NSArray *values = [[self groupsDict] objectForKey:key];
+    
+    /*
+     When a row is selected, set the detail view controller's 
+     detail item to the item associated with the selected row
+     */
+    
+//    TAPDetailViewController *rootDetailController = [[TAPDetailViewController alloc] initWithKey:key values:values viewController:[self detailViewController]];
+    TAPDetailViewController *rootDetailController = [[TAPDetailViewController alloc] init];
+    [[self navigationController] pushViewController:rootDetailController animated:YES];
+
+
 }
 
 @end
